@@ -3,10 +3,10 @@
 		{
 			"type": "shell",
 			"label": "Run AVH",
-			"command": "VHT_MPS2_Cortex-M3",
+			"command": "/Users/nishchaychawla/projects/learning/arm-experiments/FVPs-on-Mac/bin/FVP_MPS2_Cortex-M3",
 			"args": [
 				"-f",
-				"vht_config.txt",
+				"/Users/nishchaychawla/projects/learning/arm-experiments/keil-studio-get-started/vht-config.txt",
  				"${command:cmsis-csolution.getBinaryFile}",
 				"-Q",
 				"10"

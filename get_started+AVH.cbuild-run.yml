@@ -1,0 +1,29 @@
+cbuild-run:
+  generated-by: csolution version 2.8.0
+  solution: get_started.csolution.yml
+  target-type: AVH
+  compiler: GCC
+  device: ARM::ARMCM3
+  device-pack: ARM::CMSIS@5.9.0
+  output:
+    - file: out/hello/AVH/Debug/hello.elf
+      info: generate by hello.Debug+AVH
+      type: elf
+  system-resources:
+    memory:
+      - name: IROM1
+        start: 0x00000000
+        size: 0x00040000
+        default: true
+        startup: true
+        from-pack: ARM::CMSIS@5.9.0
+      - name: IRAM1
+        start: 0x20000000
+        size: 0x00020000
+        default: true
+        from-pack: ARM::CMSIS@5.9.0
+  debugger:
+    - name: <default>
+      port: swd
+      clock: 10000000
+      dbgconf: ../../../../../..

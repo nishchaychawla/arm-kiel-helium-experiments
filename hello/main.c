@@ -25,21 +25,100 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "network.h"         // Added
+#include "common.h"
+
+// Definitions from demo.cpp (adjust array size if needed)
+#define TA_ID 0
+#define TA_LEN 15
+#define TB_ID 1
+#define TB_LEN 3
+
+// Buffer from demo.cpp
+__ALIGNED(16) // Make sure __ALIGNED is defined (often in CMSIS headers)
+float32_t internal_ta[TA_LEN];
 
 /*---------------------------------------------------------------------------
  * Application main thread
  *---------------------------------------------------------------------------*/
 
-static void app_main (void *argument) {
+ static void app_main (void *argument) {
   (void)argument;
 
-  for(int count = 0; count<100; count++) {
-    printf ("Hello World %d\r\n", count);
-    osDelay (1000);
-  }
+  printf("Starting MLHelium demo logic...\r\n");
+  osDelay(100); // Small delay
 
-  exit(0);
+  /* --- Start of logic adapted from demo.cpp --- */
+
+  // You MUST have the definitions for these helper functions available
+  // Otherwise the code below will not link or run.
+
+  /* Read first tensor from network description */
+  float32_t *ta = get_f32_tensor(network, TA_ID); // Need helper definition
+  if (ta != NULL) { // Add NULL checks for safety
+   printf("TA:\r\n");
+   for(int i=0; i<TA_LEN; i++) {
+     // Note: Printing floats requires correct C library configuration
+    //  printf("%f\r\n", ta[i]);
+     float32_t val = ta[i]; // Or internal_ta[i] or (float32_t)tb[i]
+     int32_t int_part = (int32_t)val;
+     // Get fractional part scaled up (e.g., 3 decimal places)
+     int32_t frac_part = (int32_t)((val - int_part) * 1000.0f); 
+     // Handle negative fractional part if value was negative
+     if (frac_part < 0) {
+         frac_part = -frac_part;
+     }
+     // Ensure leading zeros for fractional part
+     printf("%ld.%03ld\r\n", int_part, frac_part); 
+   }
+  } else {
+    printf("Error getting TA tensor\r\n");
+  }
+  printf("test \r\n"); // Original printf from demo.cpp
+
+  /* Read second tensor from network description */
+  float8_t *tb = get_f8_tensor(network, TB_ID); // Need helper definition
+  if (tb != NULL) { // Add NULL checks for safety
+   printf("TB:\r\n");
+   for(int i=0; i<TB_LEN; i++) {
+     // Printing float16_t might require conversion or specific formatting
+     // For simplicity, let's assume printf handles it or convert to float32
+    //  printf("%f\r\n", (float32_t)tb[i]); // Example: Cast to float32_t for printf
+     float32_t val = ta[i]; // Or internal_ta[i] or (float32_t)tb[i]
+    int32_t int_part = (int32_t)val;
+    // Get fractional part scaled up (e.g., 3 decimal places)
+    int32_t frac_part = (int32_t)((val - int_part) * 1000.0f); 
+    // Handle negative fractional part if value was negative
+    if (frac_part < 0) {
+        frac_part = -frac_part;
+    }
+    // Ensure leading zeros for fractional part
+    printf("%ld.%03ld\r\n", int_part, frac_part); 
+   }
+  } else {
+   printf("Error getting TB tensor\r\n");
+  }
+  printf("\r\n");
+
+  /* Copy first tensor to internal memory */
+  copy_tensor((uint8_t*)internal_ta, network, TA_ID); // Need helper definition
+
+  printf("INTERNAL TA:\r\n");
+  for(int i=0; i<TA_LEN; i++) {
+   printf("%f\r\n", internal_ta[i]);
+  }
+  printf("\r\n");
+
+  /* --- End of logic adapted from demo.cpp --- */
+
+  printf("MLHelium demo logic finished.\r\n");
+
+  // Decide what to do now - exit, loop, etc.
+  // The original Hello World exited after the loop.
+  exit(0); // Or loop forever: while(1) { osDelay(osWaitForever); }
 }
+
+// ... (app_initialize and main functions remain mostly the same as kiel-hello-main.c) ...
 
 /*---------------------------------------------------------------------------
  * Application initialization
@@ -47,6 +126,8 @@ static void app_main (void *argument) {
 static void app_initialize (void) {
   osThreadNew(app_main, NULL, NULL);
 }
+
+
 
 /*---------------------------------------------------------------------------
  * C main

@@ -13,6 +13,9 @@ solution:
       Link:
         - --specs=nano.specs
         - --specs=rdimon.specs
+        - -lm
+      Library:
+        - -lm
 
   packs:                                      # add packs required by the projects
     - pack: ARM::CMSIS@5.9.0

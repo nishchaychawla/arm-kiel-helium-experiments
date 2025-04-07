@@ -1,3 +1,15 @@
 {
-    "sarif-viewer.connectToGithubCodeScanning": "on"
+    "sarif-viewer.connectToGithubCodeScanning": "on",
+    "clangd.arguments": [
+        "--compile-commands-dir=/Users/nishchaychawla/projects/learning/arm-experiments/keil-studio-get-started/out/hello/AVH/Debug"
+    ],
+    "cmsis-csolution.actions": [
+        {
+            "path": "get_started.csolution.yml",
+            "target": "AVH",
+            "config": {
+                "run": "Run AVH"
+            }
+        }
+    ]
 }
